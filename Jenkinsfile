@@ -9,17 +9,26 @@ pipeline {
         sh 'java -version'
       }
     }
-    stage('Checkpoint') {
-      steps {
-        checkpoint 'Checkpoint'
+       stage('Testing') {
+        parallel {
+          stage('Java 8') {
+            agent { label 'jdk9' }
+            steps {
+              container('maven8') {
+                sh 'mvn -v'
+              }
+            }
+          }
+          stage('Java 9') {
+            agent { label 'jdk8' }
+            steps {
+              container('maven9') {
+                sh 'mvn -v'
+              }
+            }
+          }
+        }
       }
-    }
-    stage('Deploy') {
-      steps {
-        echo 'Deploying....'
-      }
-    }
-    
   
   }
   environment {
